@@ -18,7 +18,7 @@ enum Language
 namespace Translate
 {
     //翻译
-    const std::wstring& Translate(
+    const std::wstring Translate(
         const std::wstring& chineseText,
         Language lang);
 }

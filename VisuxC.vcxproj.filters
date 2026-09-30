@@ -43,6 +43,21 @@
     <ClInclude Include="src\user\User.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\sidebar\SideBar.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\menu\Menu.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shared.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\info\Message.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Debug.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main\Lang.cpp">
@@ -61,6 +76,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Shared.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sidebar\SideBar.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu\Menu.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\info\Message.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\Debug.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

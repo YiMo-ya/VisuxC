@@ -9,6 +9,8 @@ std::wstring ExePath = std::filesystem::current_path().wstring();
 
 bool EnableDWM = false;
 
+Color FONTCOLOR;
+
 namespace Shared
 {
 	NOXS; NOSTD;

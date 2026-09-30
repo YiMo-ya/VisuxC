@@ -10,6 +10,8 @@ extern std::wstring ExePath;
 
 extern bool EnableDWM;
 
+extern Color FONTCOLOR;
+
 namespace Shared
 {
 	void DrawBorder(RenWin& window);

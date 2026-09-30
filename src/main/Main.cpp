@@ -1,7 +1,10 @@
 #include "Xs/Xs.h"
 #include "src/Shared.h"
 #include "src/user/User.h"
-#include "src/main/MainWindow.h"
+#include "src/info/Message.h"
+
+#include "Debug.h"
+#include "MainWindow.h"
 
 NOXS; NOSTD;
 
@@ -22,16 +25,34 @@ bool CanCallDwmSetWindowAttribute()
 
 void InitApp()
 {
+	Debug::Debug = true;
+
 	//启用高DPI
 	XWindow::SetDPIAware();
 
 	//初始化屏幕大小
 	ScreenSize = XSystem::Info::GetScreenSize();
 
+	FONTSIZE = ScreenSize.x / 100;
+
 	//初始化用户数据
 	UserData::Read();
 
+	//检查DWM是否可用
 	EnableDWM = CanCallDwmSetWindowAttribute();
+
+	//初始化文字颜色
+	FONTCOLOR = UserData::BackColor == Color(30, 30, 30) ? Color::White : Color::Black;
+
+	//字体位置
+	wstring FontPath = ExePath + L"\\Font\\zh.dll";
+	if (!XFile::Exists(FontPath))
+	{
+		Message::ShowMessage(L"找不到字体文件", L"初始化错误", ICOTYPE_ERROR);
+	}
+	Font font;
+	font.openFromFile(FontPath);
+	XText::SetFont(font);
 }
 
 #pragma endregion
@@ -48,7 +69,7 @@ int main()
 	{
 		if(UserData::CanEnableDWM)
 		{
-			XWindow::DWM::SetWindowBackType(window, BACKTYPE_BLUR);
+			XWindow::DWM::SetWindowBackType(window, BACKTYPE_HEAVYMICA);
 			XWindow::DWM::ExtendIntoClientArea(window, -1, -1, -1, -1);
 			XWindow::DWM::SetWindowDarkMode(window, UserData::BackColor == Color(30, 30, 30) ? true : false);
 		}
@@ -67,8 +88,6 @@ int main()
 
 	//初始化图标
 	XWindow::SetIcon(window, L"Icon.dll");
-
-	XWindow::SetWindowAlpha(window, 252);
 
 	MainWindow::App(window);
 }

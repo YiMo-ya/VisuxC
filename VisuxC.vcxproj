@@ -26,17 +26,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resources\resource.h" />
+    <ClInclude Include="src\info\Message.h" />
+    <ClInclude Include="src\main\Debug.h" />
     <ClInclude Include="src\main\ErrorCode.h" />
     <ClInclude Include="src\main\Lang.h" />
     <ClInclude Include="src\main\MainWindow.h" />
+    <ClInclude Include="src\menu\Menu.h" />
+    <ClInclude Include="src\Shared.h" />
+    <ClInclude Include="src\sidebar\SideBar.h" />
     <ClInclude Include="src\ui\UI.h" />
     <ClInclude Include="src\user\User.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\info\Message.cpp" />
+    <ClCompile Include="src\main\Debug.cpp" />
     <ClCompile Include="src\main\Lang.cpp" />
     <ClCompile Include="src\main\Main.cpp" />
     <ClCompile Include="src\main\MainWindow.cpp" />
+    <ClCompile Include="src\menu\Menu.cpp" />
     <ClCompile Include="src\Shared.cpp" />
+    <ClCompile Include="src\sidebar\SideBar.cpp" />
     <ClCompile Include="src\ui\UI.cpp" />
     <ClCompile Include="src\user\User.cpp" />
   </ItemGroup>
@@ -94,7 +103,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>$(SolutionDir);$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

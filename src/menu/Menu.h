@@ -1,0 +1,9 @@
+#pragma once
+#include "Xs/Xs.h"
+
+//左上角菜单
+
+namespace Menu
+{
+	void Draw(RenWin& window);
+}
