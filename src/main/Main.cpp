@@ -1,6 +1,7 @@
 #include "Xs/Xs.h"
-#include "Shared.h"
-#include "User.h"
+#include "src/Shared.h"
+#include "src/user/User.h"
+#include "src/main/MainWindow.h"
 
 NOXS; NOSTD;
 
@@ -34,26 +35,6 @@ void InitApp()
 }
 
 #pragma endregion
-
-//主逻辑
-#pragma region MyRegion
-
-
-
-void App(RenWin& window)
-{
-	while (XMsg::IsOpen(window))
-	{
-		XWindow::DelayFps(window);
-
-		//未启用DWM绘制边框
-		if (!EnableDWM) Shared::DrawBorder(window);
-	}
-}
-
-#pragma endregion
-
-
 
 int main()
 {
@@ -89,5 +70,5 @@ int main()
 
 	XWindow::SetWindowAlpha(window, 252);
 
-	App(window);
+	MainWindow::App(window);
 }

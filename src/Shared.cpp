@@ -1,5 +1,5 @@
 #include "Shared.h"
-#include "User.h"
+#include "src/user/User.h"
 
 Vector2i WindowSize, ScreenSize;
 

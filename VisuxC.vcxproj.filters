@@ -15,50 +15,53 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Shared.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="User.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Lang.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="UI.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
+    <Image Include="Resources\VisuxC.ico">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Shared.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="User.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ErrorCode.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Lang.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="UI.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="VisuxC.rc">
+    <ResourceCompile Include="Resources\VisuxC.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="VisuxC.ico">
-      <Filter>资源文件</Filter>
-    </Image>
+    <ClInclude Include="Resources\resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\ErrorCode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\Lang.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main\MainWindow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\UI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user\User.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main\Lang.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\Main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main\MainWindow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\UI.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user\User.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shared.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

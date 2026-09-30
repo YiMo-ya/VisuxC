@@ -1,6 +1,6 @@
 #pragma once
 #include "Xs/Xs.h"
-#include "Lang.h"
+#include "src/main/Lang.h"
 
 namespace UserData
 {

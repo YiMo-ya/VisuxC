@@ -18,6 +18,28 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\VisuxC.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\VisuxC.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resources\resource.h" />
+    <ClInclude Include="src\main\ErrorCode.h" />
+    <ClInclude Include="src\main\Lang.h" />
+    <ClInclude Include="src\main\MainWindow.h" />
+    <ClInclude Include="src\ui\UI.h" />
+    <ClInclude Include="src\user\User.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main\Lang.cpp" />
+    <ClCompile Include="src\main\Main.cpp" />
+    <ClCompile Include="src\main\MainWindow.cpp" />
+    <ClCompile Include="src\Shared.cpp" />
+    <ClCompile Include="src\ui\UI.cpp" />
+    <ClCompile Include="src\user\User.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -70,6 +92,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>$(SolutionDir);$(ExternalIncludePath)</ExternalIncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -139,27 +165,6 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Lang.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Shared.cpp" />
-    <ClCompile Include="UI.cpp" />
-    <ClCompile Include="User.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ErrorCode.h" />
-    <ClInclude Include="Lang.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="Shared.h" />
-    <ClInclude Include="UI.h" />
-    <ClInclude Include="User.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="VisuxC.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="VisuxC.ico" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
