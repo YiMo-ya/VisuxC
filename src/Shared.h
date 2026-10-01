@@ -12,6 +12,8 @@ extern bool EnableDWM;
 
 extern Color FONTCOLOR;
 
+extern int ROUNDSIZE;
+
 namespace Shared
 {
 	void DrawBorder(RenWin& window);

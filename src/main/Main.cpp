@@ -38,11 +38,17 @@ void InitApp()
 	//初始化用户数据
 	UserData::Read();
 
+	//自适应字体大小
+	if (UserData::Lang == EN) FONTSIZE *= 0.9;
+
 	//检查DWM是否可用
 	EnableDWM = CanCallDwmSetWindowAttribute();
 
 	//初始化文字颜色
 	FONTCOLOR = UserData::BackColor == Color(30, 30, 30) ? Color::White : Color::Black;
+
+	//圆角大小
+	ROUNDSIZE = ScreenSize.x / 200;
 
 	//字体位置
 	wstring FontPath = ExePath + L"\\Font\\zh.dll";
@@ -63,7 +69,8 @@ int main()
 
 	RenWin window;
 
-	XWindow::CreateGraphWindow(window, -1,-1,ScreenSize.x / 1.5, ScreenSize.y / 1.5, L"VisuxC");
+	XWindow::CreateGraphWindow(window, -1,-1,ScreenSize.x / 1.3, ScreenSize.y / 1.3, L"VisuxC");
+	XWindow::SetWindowMinSize(window, ScreenSize.x / 1.5, ScreenSize.y / 1.5);
 
 	if (EnableDWM)
 	{

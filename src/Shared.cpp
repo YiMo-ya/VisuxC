@@ -11,6 +11,8 @@ bool EnableDWM = false;
 
 Color FONTCOLOR;
 
+int ROUNDSIZE;
+
 namespace Shared
 {
 	NOXS; NOSTD;
