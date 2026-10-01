@@ -23,10 +23,17 @@ namespace Menu
 
 	//展开标记，-1表示没有
 	static int ExpMenuIndex = -1;
+	static int ExpIndexTemp = -1;
 	static EV2 ExpRectSize;
 	static EV2 ExpRectPos;
 	static EV ExpRectAlpha;
 	static EV ExpChildTextAlpha;
+
+	//单一子项大小
+	static int ChildSize;
+
+	//子菜单阴影
+	static IMAGE Shadow;
 
 	//初始化
 	void Init()
@@ -38,7 +45,7 @@ namespace Menu
 		NeedReRraw = true;
 
 		//配置解释器
-		wstring SideBarConfigPath = ExePath + L"\\Config\\SideBar\\Config.ini";
+		wstring SideBarConfigPath = ExePath + L"\\Config\\Menu\\Config.ini";
 
 		std::ifstream Config(SideBarConfigPath);
 		if (!Config.is_open())
@@ -96,18 +103,19 @@ namespace Menu
 				}
 			}
 		}
+
+		//单一子项大小
+		ChildSize = ScreenSize.y * 0.03;
+
+		//子项阴影
+		XImage::NewImage(Shadow, ExePath + L"\\Image\\Menu\\BackShadow.dll");
 	}
 
 	//显示菜单子项
 	void DrawChild(RenWin& window)
 	{
-		//单一子项大小
-		static int ChildSize = ScreenSize.y * 0.03;
-
 		//总大小
 		static Vector2i AllSize = { int(ScreenSize.x * 0.1),int(ScreenSize.y * 0.03) };
-
-		static int ExpTemp = -1;
 
 		//更新动画
 		ExpRectSize.x.UpdateAnimation(XEase::EaseBasic::easeOut, 4);
@@ -118,9 +126,9 @@ namespace Menu
 		ExpChildTextAlpha.UpdateAnimation(XEase::EaseBasic::easeOut, 4);
 
 		//刷新大小
-		if (ExpMenuIndex != ExpTemp)
+		if (ExpMenuIndex != ExpIndexTemp)
 		{
-			ExpTemp = ExpMenuIndex;
+			ExpIndexTemp = ExpMenuIndex;
 
 			//显示
 			if(ExpMenuIndex > -1)
@@ -151,7 +159,7 @@ namespace Menu
 				}
 
 				ExpRectAlpha.SetAnimationStartValue(100);
-				ExpRectAlpha.SetAnimation(220, 10);
+				ExpRectAlpha.SetAnimation(240, 10);
 				ExpChildTextAlpha.SetAnimationStartValue(0);
 				ExpChildTextAlpha.SetAnimation(255, 10);
 			}
@@ -168,8 +176,17 @@ namespace Menu
 		//不显示
 		if (ExpRectAlpha.value < 0) return;
 
+		//绘制阴影
+		Shadow.color.a = ExpRectAlpha.value / 2;
+		static float ShadowScale = 0.2;
+		float RectScaleX = ExpRectSize.x.value * (1 + ShadowScale) / 512.0, RectScaleY = ExpRectSize.y.value * (1 + ShadowScale) / 512.0;
+		XImage::PutScaleImage(Shadow,
+			ExpRectPos.x.value - ExpRectSize.x.value * ShadowScale / 2,
+			ExpRectPos.y.value - ExpRectSize.y.value * ShadowScale / 2,
+			RectScaleX, RectScaleY, window);
+
 		//绘制底色
-		static Color BackFillColor = UserData::BackColor == Color(30, 30, 30) ? Color(50, 50, 50) : Color(220, 220, 220);
+		static Color BackFillColor = UserData::BackColor == Color(30, 30, 30) ? Color(50, 50, 50) : Color(250, 250, 250);
 		BackFillColor.a = ExpRectAlpha.value;
 		XGraph::SetFillColor(BackFillColor);
 		static int ChildRectY = ScreenSize.y * 0.03;
@@ -181,9 +198,10 @@ namespace Menu
 		{
 			for (int i = 1; i < SideBarName[ExpMenuIndex].size(); i++)
 			{
+				//绘制选中底色
 				if (XMsg::MouseMsg::IsMouseIn(ExpRectPos.x.value, ExpRectPos.y.value + ChildSize * (i - 1), ExpRectSize.x.value, ChildSize))
 				{
-					static Color FillColor = UserData::BackColor == Color(30, 30, 30) ? Color(100, 100, 100) : Color(180, 180, 180);
+					static Color FillColor = UserData::BackColor == Color(30, 30, 30) ? Color(100, 100, 100) : Color(220, 220, 220);
 					XGraph::SetFillColor(FillColor);
 					XGraph::RectangleShape::FillRoundRect_WithoutBorder(
 						ExpRectPos.x.value, ExpRectPos.y.value + ChildSize * (i - 1), ExpRectSize.x.value, ChildSize, ROUNDSIZE, window);
@@ -200,22 +218,6 @@ namespace Menu
 					ExpRectPos.x.value + LeftSpace,
 					ExpRectPos.y.value - ChildSize * 0.5 + ChildSize * i,
 					SideBarName[ExpMenuIndex][i], window);
-			}
-		}
-
-		if (XMsg::MouseMsg::IsMouseDown(VK::MouseLeft))
-		{
-			//在菜单内->操作
-			if (XMsg::MouseMsg::IsMouseIn(
-				FontSpace * ExpMenuIndex, 0, ExpRectSize.x.value + FontSpace * 0.3, ExpRectSize.y.value + ChildRectY))
-			{
-				
-			}
-
-			if(!ExpRectAlpha.IsAnimation())
-			{
-				ExpMenuIndex = -1;
-				XMsg::ClearMsg();
 			}
 		}
 	}
@@ -279,7 +281,17 @@ namespace Menu
 		s.setPosition({ 0.0,0.0 });
 		window.draw(s);
 
-		//按键
+		//绘制子项
+		DrawChild(window);
+	}
+
+	//菜单消息
+	void Msg(RenWin& window)
+	{
+		//静态菜单大小
+		static int Size = SideBarName.size();
+		if(Size < 1) Size = SideBarName.size();
+		static int h = ScreenSize.y * 0.03;
 
 		//鼠标
 		for (int i = 0; i < Size; i++)
@@ -327,32 +339,43 @@ namespace Menu
 				if (ExpMenuIndex != 2) ExpMenuIndex = 2;
 				else ExpMenuIndex = -1;
 			}
-			//生成
-			if (XMsg::KeyMsg::IsKeyDown(VK::B))
-			{
-				if (ExpMenuIndex != 3) ExpMenuIndex = 3;
-				else ExpMenuIndex = -1;
-			}
 			//工具
 			if (XMsg::KeyMsg::IsKeyDown(VK::T))
 			{
-				if (ExpMenuIndex != 4) ExpMenuIndex = 4;
+				if (ExpMenuIndex != 3) ExpMenuIndex = 3;
 				else ExpMenuIndex = -1;
 			}
 			//帮助
 			if (XMsg::KeyMsg::IsKeyDown(VK::H))
 			{
-				if (ExpMenuIndex != 5) ExpMenuIndex = 5;
+				if (ExpMenuIndex != 4) ExpMenuIndex = 4;
 				else ExpMenuIndex = -1;
 			}
 			//关于
 			if (XMsg::KeyMsg::IsKeyDown(VK::A))
 			{
-				
+
 			}
 		}
 
-		//绘制子项
-		DrawChild(window);
+		//菜单子项
+		if (ExpMenuIndex > -1)
+		{
+			if (XMsg::MouseMsg::IsMouseDown(VK::MouseLeft))
+			{
+				//在菜单内->操作
+				if (XMsg::MouseMsg::IsMouseIn(
+					FontSpace * ExpMenuIndex, 0, ExpRectSize.x.value + FontSpace * 0.3, ExpRectSize.y.value + h))
+				{
+
+				}
+
+				if (ExpIndexTemp == ExpMenuIndex)
+				{
+					ExpMenuIndex = -1;
+					XMsg::ClearMsg();
+				}
+			}
+		}
 	}
 }

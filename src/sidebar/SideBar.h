@@ -5,7 +5,7 @@ namespace SideBar
 {
 	namespace SideBarLevel1
 	{
-
+		void Draw(RenWin& window);
 	}
 
 	namespace SideBarLevel2

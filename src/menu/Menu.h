@@ -6,4 +6,5 @@
 namespace Menu
 {
 	void Draw(RenWin& window);
+	void Msg(RenWin& window);
 }

@@ -20,7 +20,9 @@ namespace Shared
 	//绘制没有DWM的边框
 	void DrawBorder(RenWin& window)
 	{
-		XGraph::SetColor(UserData::MainColor);
+		if(XWindow::IsFocus(window)) XGraph::SetColor(UserData::MainColor);
+		else XGraph::SetColor(Color(150,150,150));
+
 		static int LineWidth = ScreenSize.x / 1000;
 		XGraph::LineShape::SetLineWidth(LineWidth);
 

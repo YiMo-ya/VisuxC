@@ -25,10 +25,13 @@ bool CanCallDwmSetWindowAttribute()
 
 void InitApp()
 {
-	Debug::Debug = true;
+	Debug::Debug = false;
 
 	//启用高DPI
 	XWindow::SetDPIAware();
+
+	//设置批处理
+	XBatch::SetBatchType(BATCH_HANDLED);
 
 	//初始化屏幕大小
 	ScreenSize = XSystem::Info::GetScreenSize();
@@ -52,12 +55,11 @@ void InitApp()
 
 	//字体位置
 	wstring FontPath = ExePath + L"\\Font\\zh.dll";
-	if (!XFile::Exists(FontPath))
+	Font font;
+	if (!font.openFromFile(FontPath))
 	{
 		Message::ShowMessage(L"找不到字体文件", L"初始化错误", ICOTYPE_ERROR);
 	}
-	Font font;
-	font.openFromFile(FontPath);
 	XText::SetFont(font);
 }
 
@@ -76,7 +78,7 @@ int main()
 	{
 		if(UserData::CanEnableDWM)
 		{
-			XWindow::DWM::SetWindowBackType(window, BACKTYPE_HEAVYMICA);
+			XWindow::DWM::SetWindowBackType(window, BACKTYPE_MICA);
 			XWindow::DWM::ExtendIntoClientArea(window, -1, -1, -1, -1);
 			XWindow::DWM::SetWindowDarkMode(window, UserData::BackColor == Color(30, 30, 30) ? true : false);
 		}

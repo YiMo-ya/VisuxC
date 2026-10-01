@@ -26,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resources\resource.h" />
+    <ClInclude Include="src\bottombar\BottomBar.h" />
     <ClInclude Include="src\info\Message.h" />
     <ClInclude Include="src\main\Debug.h" />
     <ClInclude Include="src\main\ErrorCode.h" />
@@ -38,6 +39,7 @@
     <ClInclude Include="src\user\User.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\bottombar\BottomBar.cpp" />
     <ClCompile Include="src\info\Message.cpp" />
     <ClCompile Include="src\main\Debug.cpp" />
     <ClCompile Include="src\main\Lang.cpp" />
