@@ -244,9 +244,7 @@ namespace SideBar
 				}
 
 				//简介计时器
-
 				static int InIndex = -1;
-
 				if (InTime < 15)
 				{
 					InTime += 1;
@@ -258,8 +256,8 @@ namespace SideBar
 					{
 						InIndex = SideBarInIndex;
 
-						if(NameRect.w.value <= 0) NameRect.x.SetAnimationStartValue(w * 0.2);
-						NameRect.x.SetAnimation(w * 0.3, 10);
+						if(NameRect.w.value <= 0) NameRect.x.SetAnimationStartValue(w * 0.5);
+						NameRect.x.SetAnimation(w * 0.6, 10);
 
 						if (NameRect.h.value <= 0) NameRect.y.SetAnimationStartValue(StartY + Space * SideBarInIndex + Space / 4);
 						NameRect.y.SetAnimation(StartY + Space * SideBarInIndex + Space / 2, 10);
@@ -363,40 +361,103 @@ namespace SideBar
 			//更新动画
 			SideBarLevel2Width.UpdateAnimation(XEase::EaseBasic::easeOut, 4);
 
-			//纹理尺寸<=0时不绘制
-			if (SideBarLevel2Width.value <= 0) return;
-
 			//开始Y坐标
 			static int StartY = Menu::h;
 			//高度
 			int h = WindowSize.y - StartY - BottomBar::h;
 
-			//绘制底色
-			if (SideBarLevel2Width.IsAnimation() || NeedRedraw || XMsg::WindowMsg::IsWindowResize())
+			static int Space = ScreenSize.x / 300;
+
+			//纹理尺寸大于0时绘制
+			if(SideBarLevel2Width.value > 0)
 			{
-				if (rt.resize({ unsigned int(SideBarLevel2Width.value),unsigned int(h) }))
+				//绘制底色
+				if (SideBarLevel2Width.IsAnimation() || NeedRedraw || XMsg::WindowMsg::IsWindowResize())
 				{
-					rt.clear(Color::Transparent);
+					if (rt.resize({ unsigned int(SideBarLevel2Width.value),unsigned int(h) }))
+					{
+						rt.clear(Color::Transparent);
 
-					static int lw = ScreenSize.x / 500;
-					XGraph::LineShape::SetLineWidth(lw);
-					XGraph::SetColor(Color(120,120,120));
-					XGraph::RectangleShape::RoundRect(0, 0, SideBarLevel2Width.value, h, ROUNDSIZE,rt);
+						static int lw = ScreenSize.x / 500;
+						XGraph::LineShape::SetLineWidth(lw);
+						XGraph::SetColor(Color(120, 120, 120));
+						XGraph::RectangleShape::RoundRect(0, 0, SideBarLevel2Width.value, h, ROUNDSIZE, rt);
 
-					rt.display();
+						rt.display();
+					}
+				}
+
+				//当是正确的项的时候绘制
+				if (SideBarLevel1::SideBarIndex > -1)
+				{
+
 				}
 			}
 
-			//当是正确的项的时候绘制
-			if (SideBarLevel1::SideBarIndex > -1)
+			//调整大小
+			static bool IsResize = false;
+			static int ResizeTipLineAlpha = 0;
+			if (XMsg::MouseMsg::IsMousePress(VK::MouseLeft) && SideBarLevel2Width.value > 0)
 			{
+				if (XMsg::MouseMsg::IsMouseIn(SideBarLevel1::w + SideBarLevel2::SideBarLevel2Width.value, StartY, Space, h))
+				{
+					IsResize = true;
+				}
 
+				if (IsResize)
+				{
+					int x = XMsg::MouseMsg::GetMousePosWindow().x;
+
+					SideBarLevel2Width.SetAnimationStartValue(x - SideBarLevel1::w);
+
+					ResizeTipLineAlpha = 255;
+
+					//小于一个阈值，直接收回
+					if (SideBarLevel2Width.value < Space)
+					{
+						SideBarLevel2Width.SetAnimationStartValue(0);
+						IsResize = false;
+
+						SideBarLevel1::SideBarLineSize.SetAnimation(0, 10);
+						SideBarLevel1::SideBarLevel1Icons[SideBarLevel1::SideBarIndex].IconXOffset.SetAnimation(0, 10);
+						SideBarLevel1::SideBarIndex = -1;
+						SideBarLevel1::NeedRedraw = true;
+					}
+
+					NeedRedraw = true;
+				}
+			}
+			else
+			{
+				if (IsResize) IsResize = false;
+
+				if (ResizeTipLineAlpha - 30 > 0) ResizeTipLineAlpha -= 30;
+				else ResizeTipLineAlpha = 0;
+			}
+			
+			//纹理尺寸大于0时绘制
+			if (SideBarLevel2Width.value > 0)
+			{
+				Sprite s(rt.getTexture());
+				s.setPosition({ (float)SideBarLevel1::w,(float)StartY });
+				window.draw(s);
 			}
 
-
-			Sprite s(rt.getTexture());
-			s.setPosition({ (float)SideBarLevel1::w,(float)StartY });
-			window.draw(s);
+			//调整大小提示线
+			if (ResizeTipLineAlpha > 0)
+			{
+				static int lw = ScreenSize.x / 300;
+				XGraph::LineShape::SetLineWidth(lw);
+				XGraph::LineShape::SetLineCap(LINECAP_FLAT);
+				Color LineColor = UserData::MainColor;
+				LineColor.a = ResizeTipLineAlpha;
+				XGraph::SetColor(LineColor);
+				XGraph::LineShape::Line(
+					SideBarLevel1::w + SideBarLevel2::SideBarLevel2Width.value + Space / 2, StartY,
+					SideBarLevel1::w + SideBarLevel2::SideBarLevel2Width.value + Space / 2, StartY + h,
+					window);
+				XGraph::LineShape::SetLineCap();
+			}
 		}
 	}
 }
