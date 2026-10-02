@@ -108,7 +108,7 @@ namespace Menu
 		ChildSize = ScreenSize.y * 0.03;
 
 		//子项阴影
-		XImage::NewImage(Shadow, ExePath + L"\\Image\\Menu\\BackShadow.dll");
+		XImage::NewImage(Shadow, ExePath + L"\\Image\\Menu\\Shadow.dll");
 	}
 
 	//显示菜单子项
@@ -373,9 +373,13 @@ namespace Menu
 				if (ExpIndexTemp == ExpMenuIndex)
 				{
 					ExpMenuIndex = -1;
-					XMsg::ClearMsg();
 				}
 			}
+
+			//子项展开时要清除所有消息
+			XMsg::ClearMsg();
 		}
+
+
 	}
 }

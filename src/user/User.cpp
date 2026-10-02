@@ -39,7 +39,11 @@ namespace UserData
 				{
 					UserData >> Data;
 					if (Data == "Black") BackColor = Color(30, 30, 30);
-					else BackColor = Color(240, 240, 240);
+					else
+					{
+						BackColor = Color(240, 240, 240);
+						MainColor = Color(180, 0, 255);
+					}
 				}
 				//语言
 				if (Data == "<Lang>")

@@ -10,6 +10,6 @@ namespace SideBar
 
 	namespace SideBarLevel2
 	{
-
+		void Draw(RenWin& window);
 	}
 }
