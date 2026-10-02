@@ -13,6 +13,50 @@ namespace SideBar
 {
 	NOXS; NOSTD;
 
+	class SideBarIcon
+	{
+	public:
+
+		IMAGE img;
+		wstring name;
+
+		int Width;
+
+		EV IconXOffset;
+
+		float GetTextRenderWidth(const std::wstring& text, unsigned int fontSize, const sf::Font& font)
+		{
+			sf::Text label(font);
+			label.setString(text);
+			label.setCharacterSize(fontSize);
+			// 不需要 setPosition，bounds 是 local 坐标，跟位置无关
+
+			sf::FloatRect bounds = label.getLocalBounds();
+			return bounds.size.x;
+		}
+
+		void SetName(wstring& ChineseIndex)
+		{
+			name = Translate::Translate(ChineseIndex, UserData::Lang);
+
+			Font font;
+			wstring FontPath = ExePath + L"\\Font\\zh.dll";
+			font.openFromFile(FontPath);
+			Width = GetTextRenderWidth(name, FONTSIZE, font) + ScreenSize.x * 0.02;
+		}
+
+		void SetIcon(filesystem::path& path)
+		{
+			if (!XImage::NewImage(img, path))
+			{
+				XImage::NewImage(img, ExePath + L"\\Image\\ErrorIcon.dll");
+			}
+
+			img.color = UserData::BackColor == Color(30, 30, 30) ? Color::White : Color::Black;
+		}
+	};
+	vector<SideBarIcon> SideBarLevel1Icons;
+
 	namespace SideBarLevel1
 	{
 		static RenderTexture rt;
@@ -24,49 +68,7 @@ namespace SideBar
 		EV NameAlpha;
 		int InTime;
 
-		class SideBarIcon
-		{
-		public:
-
-			IMAGE img;
-			wstring name;
-
-			int Width;
-
-			EV IconXOffset;
-
-			float GetTextRenderWidth(const std::wstring& text, unsigned int fontSize, const sf::Font& font)
-			{
-				sf::Text label(font);
-				label.setString(text);
-				label.setCharacterSize(fontSize);
-				// 不需要 setPosition，bounds 是 local 坐标，跟位置无关
-
-				sf::FloatRect bounds = label.getLocalBounds();
-				return bounds.size.x;
-			}
-
-			void SetName(wstring& ChineseIndex)
-			{
-				name = Translate::Translate(ChineseIndex, UserData::Lang);
-
-				Font font;
-				wstring FontPath = ExePath + L"\\Font\\zh.dll";
-				font.openFromFile(FontPath);
-				Width = GetTextRenderWidth(name, FONTSIZE, font) + ScreenSize.x * 0.02;
-			}
-
-			void SetIcon(filesystem::path& path)
-			{
-				if (!XImage::NewImage(img, path))
-				{
-					XImage::NewImage(img, ExePath + L"\\Image\\ErrorIcon.dll");
-				}
-
-				img.color = UserData::BackColor == Color(30, 30, 30) ? Color::White : Color::Black;
-			}
-		};
-		vector<SideBarIcon> SideBarLevel1Icons;
+		
 
 		//侧边栏选择引索
 		int SideBarIndex = -1;
@@ -132,7 +134,7 @@ namespace SideBar
 
 				SIDEBAR_LINE_SIZE = ScreenSize.x / 100;
 
-				w = ScreenSize.x / 25;
+				w = ScreenSize.x / 30;
 
 				Init = true;
 			}
@@ -239,6 +241,9 @@ namespace SideBar
 
 							//展开二级列表
 							if (SideBarLevel2::SideBarLevel2Width.value <= 0) SideBarLevel2::SideBarLevel2Width.SetAnimation(w * 4, 10);
+
+							//更新二级列表
+							SideBarLevel2::NeedRedraw = true;
 						}
 					}
 				}
@@ -267,7 +272,8 @@ namespace SideBar
 						NameRect.h.SetAnimationStartValue(w * 0.3);
 						NameRect.h.SetAnimation(w * 0.4, 10);
 
-						if (NameSize.end != FONTSIZE) NameSize.SetAnimation(FONTSIZE, 10);
+						NameSize.SetAnimationStartValue(FONTSIZE * 0.6);
+						NameSize.SetAnimation(FONTSIZE, 10);
 
 						NameAlpha.SetAnimationStartValue(100);
 						NameAlpha.SetAnimation(255, 10);
@@ -352,7 +358,7 @@ namespace SideBar
 	namespace SideBarLevel2
 	{
 		RenderTexture rt;
-		static bool NeedRedraw = false;
+		bool NeedRedraw = false;
 
 		EV SideBarLevel2Width;
 
@@ -371,27 +377,30 @@ namespace SideBar
 			//纹理尺寸大于0时绘制
 			if(SideBarLevel2Width.value > 0)
 			{
-				//绘制底色
 				if (SideBarLevel2Width.IsAnimation() || NeedRedraw || XMsg::WindowMsg::IsWindowResize())
 				{
 					if (rt.resize({ unsigned int(SideBarLevel2Width.value),unsigned int(h) }))
 					{
 						rt.clear(Color::Transparent);
 
+						//绘制底色
 						static int lw = ScreenSize.x / 500;
 						XGraph::LineShape::SetLineWidth(lw);
 						XGraph::SetColor(Color(120, 120, 120));
 						XGraph::RectangleShape::RoundRect(0, 0, SideBarLevel2Width.value, h, ROUNDSIZE, rt);
 
+						//绘制名字
+						XText::SetFontConfig(FONTCOLOR, FONTSIZE);
+						XText::SetFontAdjust(ADJUST_LEFT, ADJUST_TOP);
+
+						static int FontSpace = ScreenSize.x / 200;
+						XText::Xyprintf(FontSpace, FontSpace, SideBarLevel1Icons[SideBarLevel1::SideBarIndex].name, rt);
+
 						rt.display();
 					}
 				}
 
-				//当是正确的项的时候绘制
-				if (SideBarLevel1::SideBarIndex > -1)
-				{
-
-				}
+				
 			}
 
 			//调整大小
@@ -419,7 +428,7 @@ namespace SideBar
 						IsResize = false;
 
 						SideBarLevel1::SideBarLineSize.SetAnimation(0, 10);
-						SideBarLevel1::SideBarLevel1Icons[SideBarLevel1::SideBarIndex].IconXOffset.SetAnimation(0, 10);
+						SideBarLevel1Icons[SideBarLevel1::SideBarIndex].IconXOffset.SetAnimation(0, 10);
 						SideBarLevel1::SideBarIndex = -1;
 						SideBarLevel1::NeedRedraw = true;
 					}

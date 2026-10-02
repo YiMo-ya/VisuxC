@@ -14,7 +14,7 @@ namespace SideBar
 
 	namespace SideBarLevel2
 	{
-
+		extern bool NeedRedraw;
 		extern xs::EV SideBarLevel2Width;
 		void Draw(RenWin& window);
 	}
