@@ -38,7 +38,7 @@ namespace UserData
 				if (Data == "<Theme>")
 				{
 					UserData >> Data;
-					if (Data == "Black") BackColor = Color(30, 30, 30);
+					if (Data == "Dark") BackColor = Color(30, 30, 30);
 					else
 					{
 						BackColor = Color(240, 240, 240);

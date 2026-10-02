@@ -5,6 +5,8 @@
 
 namespace Menu
 {
+	extern int h;
+
 	void Draw(RenWin& window);
 	void Msg(RenWin& window);
 }

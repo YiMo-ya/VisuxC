@@ -24,12 +24,7 @@ namespace BottomBar
 		}
 
 		//配色
-		if (Type == L"normal" || Type == L"process" || Type == L"loading")
-		{
-			static Color FillColor = UserData::BackColor == Color(30, 30, 30) ? Color(50, 50, 50, 200) : Color(220, 220, 220, 200);
-			XGraph::SetFillColor(FillColor);
-		}
-		else if (Type == L"error")
+		if (Type == L"error")
 		{
 			XGraph::SetFillColor(Color(255,100,100));
 		}
@@ -41,16 +36,14 @@ namespace BottomBar
 		{
 			XGraph::SetFillColor(Color(155, 155, 50));
 		}
-		else
-		{
-			static Color FillColor = UserData::BackColor == Color(30, 30, 30) ? Color(50, 50, 50, 200) : Color(220, 220, 220, 200);
-			XGraph::SetFillColor(FillColor);
-		}
 
 		int StartY = WindowSize.y - h;
 
 		//绘制底色
-		XGraph::RectangleShape::FillRect_WithoutBorder(0, StartY, WindowSize.x, h, window);
+		if (Type != "normal" && Type != L"process" && Type != L"loading")
+		{
+			XGraph::RectangleShape::FillRect_WithoutBorder(0, StartY, WindowSize.x, h, window);
+		}
 
 		//绘制文字
 		if (!Text.empty())

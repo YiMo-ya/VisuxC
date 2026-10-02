@@ -78,9 +78,10 @@ int main()
 	{
 		if(UserData::CanEnableDWM)
 		{
-			XWindow::DWM::SetWindowBackType(window, BACKTYPE_MICA);
+			XWindow::DWM::SetWindowBackType(window, BACKTYPE_BLUR);
 			XWindow::DWM::ExtendIntoClientArea(window, -1, -1, -1, -1);
 			XWindow::DWM::SetWindowDarkMode(window, UserData::BackColor == Color(30, 30, 30) ? true : false);
+			XWindow::DWM::SetWindowTitleBarColor(window, UserData::BackColor == Color(30, 30, 30) ? Color(50, 50, 50) : Color(240,240,240));
 		}
 		else
 		{

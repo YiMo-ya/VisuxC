@@ -35,6 +35,8 @@ namespace Menu
 	//子菜单阴影
 	static IMAGE Shadow;
 
+	int h;
+
 	//初始化
 	void Init()
 	{
@@ -238,7 +240,7 @@ namespace Menu
 		static int Size = SideBarName.size();
 
 		//渲染
-		static int w = ScreenSize.x * 0.3, h = ScreenSize.y * 0.03;
+		static int w = ScreenSize.x * 0.3;
 		
 		if (NeedReRraw || XMsg::WindowMsg::IsWindowResize())
 		{
@@ -291,7 +293,6 @@ namespace Menu
 		//静态菜单大小
 		static int Size = SideBarName.size();
 		if(Size < 1) Size = SideBarName.size();
-		static int h = ScreenSize.y * 0.03;
 
 		//鼠标
 		for (int i = 0; i < Size; i++)

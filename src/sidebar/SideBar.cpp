@@ -7,6 +7,7 @@
 #include "src/main/Debug.h"
 
 #include "src/bottombar/BottomBar.h"
+#include "src/menu/Menu.h"
 
 namespace SideBar
 {
@@ -76,6 +77,9 @@ namespace SideBar
 		EV SideBarLineSize;
 		static int SIDEBAR_LINE_SIZE;
 
+		int w;
+
+		//绘制侧边栏
 		void Draw(RenWin& window)
 		{
 			//初始化
@@ -128,6 +132,8 @@ namespace SideBar
 
 				SIDEBAR_LINE_SIZE = ScreenSize.x / 100;
 
+				w = ScreenSize.x / 25;
+
 				Init = true;
 			}
 
@@ -136,14 +142,13 @@ namespace SideBar
 
 			//图标数据大小
 			static int Size = SideBarLevel1Icons.size();
-
-			static int w = ScreenSize.x / 25;
+			
 
 			//图标缩放与间隔
 			static float Scale = w * 0.6 / 512.0;
 			static int Space = w;
 
-			static int StartY = ScreenSize.y * 0.03;
+			static int StartY = Menu::h;
 			int h = WindowSize.y - StartY - BottomBar::h;
 			if (NeedRedraw || XMsg::WindowMsg::IsWindowResize()
 				|| SideBarLineSize.IsAnimation() || SideBarLinePosY.IsAnimation())
@@ -153,26 +158,21 @@ namespace SideBar
 				{
 					rt.clear(Color::Transparent);
 
-					//底色
-					static Color FillColor = UserData::BackColor == Color(30, 30, 30) ? Color(50, 50, 50, 200) : Color(230, 230, 230, 255);
-					XGraph::SetFillColor(FillColor);
-					XGraph::RectangleShape::FillRect_WithoutBorder(0, 0, w, h, rt);
-
 					//图标
 					for (int i = 0; i < Size; i++)
 					{
 						auto& Icon = SideBarLevel1Icons[i];
 
 						if (i == SideBarIndex) Icon.img.color.a = 255;
-						else if(i == SideBarInIndex) Icon.img.color.a = 200;
-						else Icon.img.color.a = 150;
+						else if(i == SideBarInIndex) Icon.img.color.a = 225;
+						else Icon.img.color.a = 200;
 
 						//当前页背景
 						if (i == SideBarIndex)
 						{
 							static Color BackFillColor = UserData::BackColor == Color(30, 30, 30) ? Color(80, 80, 80) : Color(200, 200, 200);
 							XGraph::SetFillColor(BackFillColor);
-							XGraph::RectangleShape::FillRoundRect_WithoutBorder(w * 0.2, Space * i + Space / 2 - w * 0.4, w * 0.8, w * 0.8, ROUNDSIZE, rt);
+							XGraph::RectangleShape::FillRoundRect_WithoutBorder(w * 0.1, Space * i + Space / 2 - w * 0.4, w * 0.8, w * 0.8, ROUNDSIZE, rt);
 						}
 
 						//预选页背景
@@ -211,6 +211,91 @@ namespace SideBar
 			s.setPosition({ 0.0,float(StartY) });
 			window.draw(s);
 
+			//按键
+			if(XMsg::MouseMsg::IsMouseIn(0,StartY,w, Space * Size))
+			{
+				for (int i = 0; i < Size; i++)
+				{
+					if (XMsg::MouseMsg::IsMouseIn(0, StartY + Space * i, w, Space))
+					{
+						SideBarInIndex = i;
+						NeedRedraw = true;
+						if (XMsg::MouseMsg::IsMouseDown(VK::MouseLeft))
+						{
+							SideBarLevel1Icons[SideBarIndex].IconXOffset.SetAnimation(0, 10);
+							SideBarIndex = i;
+							SideBarLevel1Icons[i].IconXOffset.SetAnimation(w * 0.1, 10);
+							NeedRedraw = true;
+
+							if (SideBarLineSize.value > 0)
+							{
+								SideBarLinePosY.SetAnimation(Space * i + Space / 2, 10);
+							}
+							else
+							{
+								SideBarLinePosY.SetAnimationStartValue(Space * i + Space / 2);
+								SideBarLineSize.SetAnimation(SIDEBAR_LINE_SIZE, 10);
+							}
+
+							//展开二级列表
+							if (SideBarLevel2::SideBarLevel2Width.value <= 0) SideBarLevel2::SideBarLevel2Width.SetAnimation(w * 4, 10);
+						}
+					}
+				}
+
+				//简介计时器
+
+				static int InIndex = -1;
+
+				if (InTime < 15)
+				{
+					InTime += 1;
+					InIndex = -1;
+				}
+				else
+				{
+					if (InIndex != SideBarInIndex)
+					{
+						InIndex = SideBarInIndex;
+
+						if(NameRect.w.value <= 0) NameRect.x.SetAnimationStartValue(w * 0.2);
+						NameRect.x.SetAnimation(w * 0.3, 10);
+
+						if (NameRect.h.value <= 0) NameRect.y.SetAnimationStartValue(StartY + Space * SideBarInIndex + Space / 4);
+						NameRect.y.SetAnimation(StartY + Space * SideBarInIndex + Space / 2, 10);
+
+						NameRect.w.SetAnimationStartValue(SideBarLevel1Icons[SideBarInIndex].Width * 0.9);
+						NameRect.w.SetAnimation(SideBarLevel1Icons[SideBarInIndex].Width, 10);
+						NameRect.h.SetAnimationStartValue(w * 0.3);
+						NameRect.h.SetAnimation(w * 0.4, 10);
+
+						if (NameSize.end != FONTSIZE) NameSize.SetAnimation(FONTSIZE, 10);
+
+						NameAlpha.SetAnimationStartValue(100);
+						NameAlpha.SetAnimation(255, 10);
+					}
+				}
+			}
+			else
+			{
+				if(NameRect.w.end != 0) NameRect.w.SetAnimation(0, 10);
+				if (NameRect.h.end != 0) NameRect.h.SetAnimation(0, 10);
+				if (NameSize.end != 0) NameSize.SetAnimation(0, 10);
+				if (NameAlpha.end != 0) NameAlpha.SetAnimation(0, 10);
+
+				NeedRedraw = true;
+				SideBarInIndex = -1;
+
+				InTime = 0;
+			}
+
+			for (int i = 0; i < Size; i++) Debug::DrawDebugRect(window,0, StartY + Space * i, w, Space);
+
+		}
+
+		//绘制侧边栏提示
+		void DrawTips(RenWin& window)
+		{
 			//简介
 			NameRect.x.UpdateAnimation(XEase::EaseBasic::easeOut, 4);
 			NameRect.y.UpdateAnimation(XEase::EaseBasic::easeOut, 4);
@@ -263,86 +348,7 @@ namespace SideBar
 						SideBarLevel1Icons[SideBarInIndex].name, window);
 				}
 			}
-
-			//按键
-			if(XMsg::MouseMsg::IsMouseIn(0,StartY,w,h))
-			{
-				for (int i = 0; i < Size; i++)
-				{
-					if (XMsg::MouseMsg::IsMouseIn(0, StartY + Space * i, w, Space))
-					{
-						SideBarInIndex = i;
-						NeedRedraw = true;
-						if (XMsg::MouseMsg::IsMouseDown(VK::MouseLeft))
-						{
-							SideBarLevel1Icons[SideBarIndex].IconXOffset.SetAnimation(0, 10);
-							SideBarIndex = i;
-							SideBarLevel1Icons[i].IconXOffset.SetAnimation(w * 0.1, 10);
-							NeedRedraw = true;
-
-							if (SideBarLineSize.value > 0)
-							{
-								SideBarLinePosY.SetAnimation(Space * i + Space / 2, 10);
-							}
-							else
-							{
-								SideBarLinePosY.SetAnimationStartValue(Space * i + Space / 2);
-								SideBarLineSize.SetAnimation(SIDEBAR_LINE_SIZE, 10);
-							}
-						}
-					}
-				}
-
-				//简介计时器
-
-				static int InIndex = -1;
-
-				if (InTime < 15)
-				{
-					InTime += 1;
-					InIndex = -1;
-				}
-				else
-				{
-					if (InIndex != SideBarInIndex)
-					{
-						InIndex = SideBarInIndex;
-
-						if(NameRect.w.value <= 0) NameRect.x.SetAnimationStartValue(w * 0.5);
-						NameRect.x.SetAnimation(w * 0.6, 10);
-
-						if (NameRect.h.value <= 0) NameRect.y.SetAnimationStartValue(StartY + Space * SideBarInIndex + Space / 4);
-						NameRect.y.SetAnimation(StartY + Space * SideBarInIndex + Space / 2, 10);
-
-						NameRect.w.SetAnimationStartValue(SideBarLevel1Icons[SideBarInIndex].Width * 0.9);
-						NameRect.w.SetAnimation(SideBarLevel1Icons[SideBarInIndex].Width, 10);
-						NameRect.h.SetAnimationStartValue(w * 0.3);
-						NameRect.h.SetAnimation(w * 0.4, 10);
-
-						if (NameSize.end != FONTSIZE) NameSize.SetAnimation(FONTSIZE, 10);
-
-						NameAlpha.SetAnimationStartValue(100);
-						NameAlpha.SetAnimation(255, 10);
-					}
-				}
-			}
-			else
-			{
-				if(NameRect.w.end != 0) NameRect.w.SetAnimation(0, 10);
-				if (NameRect.h.end != 0) NameRect.h.SetAnimation(0, 10);
-				if (NameSize.end != 0) NameSize.SetAnimation(0, 10);
-				if (NameAlpha.end != 0) NameAlpha.SetAnimation(0, 10);
-
-				NeedRedraw = true;
-				SideBarInIndex = -1;
-
-				InTime = 0;
-			}
-
-			for (int i = 0; i < Size; i++) Debug::DrawDebugRect(window,0, StartY + Space * i, w, Space);
-
 		}
-
 	}
 
 	namespace SideBarLevel2
@@ -350,10 +356,47 @@ namespace SideBar
 		RenderTexture rt;
 		static bool NeedRedraw = false;
 
+		EV SideBarLevel2Width;
+
 		void Draw(RenWin& window)
 		{
-			//当不是任何项的时候不绘制
-			if (SideBarLevel1::SideBarIndex < 0) return;
+			//更新动画
+			SideBarLevel2Width.UpdateAnimation(XEase::EaseBasic::easeOut, 4);
+
+			//纹理尺寸<=0时不绘制
+			if (SideBarLevel2Width.value <= 0) return;
+
+			//开始Y坐标
+			static int StartY = Menu::h;
+			//高度
+			int h = WindowSize.y - StartY - BottomBar::h;
+
+			//绘制底色
+			if (SideBarLevel2Width.IsAnimation() || NeedRedraw || XMsg::WindowMsg::IsWindowResize())
+			{
+				if (rt.resize({ unsigned int(SideBarLevel2Width.value),unsigned int(h) }))
+				{
+					rt.clear(Color::Transparent);
+
+					static int lw = ScreenSize.x / 500;
+					XGraph::LineShape::SetLineWidth(lw);
+					XGraph::SetColor(Color(120,120,120));
+					XGraph::RectangleShape::RoundRect(0, 0, SideBarLevel2Width.value, h, ROUNDSIZE,rt);
+
+					rt.display();
+				}
+			}
+
+			//当是正确的项的时候绘制
+			if (SideBarLevel1::SideBarIndex > -1)
+			{
+
+			}
+
+
+			Sprite s(rt.getTexture());
+			s.setPosition({ (float)SideBarLevel1::w,(float)StartY });
+			window.draw(s);
 		}
 	}
 }
